@@ -19,20 +19,11 @@ local function b64Decode(data)
     end))
 end
 
--- NEW GitHub URL (base64)
+-- Anti-theft URL (base64 encoded)
 local enc_url = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL1NwYWRlb2ZkYXJrL2NoYXRncHRnb2F0L3JlZnMvYGVhZHMvbWFpbi9iZWRvYm9vYg=="
-local url = b64Decode(enc_url)
+local url = b64Decode(enc_url) .. "?t=" .. tostring(tick())
 
 local ok, res = pcall(function() return game:HttpGet(url, true) end)
-
-print("Anti-theft check fetch success:", ok)
-if ok then
-    print("Fetched script length:", #res)
-    local found = res:find("-- Final Safe GUI")
-    print("Marker string found:", found ~= nil)
-else
-    print("Error fetching raw script:", res)
-end
 
 if not ok or not res or not res:find("-- Final Safe GUI") then
     local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
@@ -59,16 +50,29 @@ if not ok or not res or not res:find("-- Final Safe GUI") then
     alarm.Looped = true
     alarm:Play()
 
-    task.delay(3, function()
+    -- Block input
+    local UIS = game:GetService("UserInputService")
+    local conn
+    conn = UIS.InputBegan:Connect(function(input)
+        input:Capture()
+    end)
+
+    -- Kick player after 5 seconds
+    task.delay(5, function()
+        alarm:Stop()
         pcall(function()
             game.Players.LocalPlayer:Kick("FAKE SCRIPT: LEAVE IMMEDIATELY.")
         end)
     end)
 
-    while true do task.wait(1) end
+    -- Wait here indefinitely (to keep GUI & input block)
+    while gui.Parent do
+        task.wait()
+    end
 end
 
--- Main obfuscated GUI and logic below --
+-- Main GUI & logic below --
+
 local function obfMain()
     local P, S, U, T, D = game:GetService("Players"), game:GetService("TweenService"), game:GetService("UserInputService"), game:GetService("TextChatService"), game:GetService("CoreGui")
     local plr = P.LocalPlayer
